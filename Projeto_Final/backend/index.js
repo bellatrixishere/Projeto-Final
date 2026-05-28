@@ -8,8 +8,8 @@ app.use(express.json());
 
 // BANCO DE DADOS
 let estoque = [
-  { id: 1, nome: "Placa de Vídeo RTX 5070", quantidade: 8, preco: 3500 },
-  { id: 2, nome: "Memória RAM 16GB DDR5", quantidade: 15, preco: 1500 }
+  { id: 1, nome: "RTX 5070", quantidade: 8, preco: 3500 },
+  { id: 2, nome: "RAM 16GB DDR5", quantidade: 15, preco: 1500 }
 ];
 
 // contador de id

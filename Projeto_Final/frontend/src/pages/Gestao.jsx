@@ -8,7 +8,7 @@ export function Gestao() {
   const [quantidade, setQuantidade] = useState('');
   const [preco, setPreco] = useState('');
 
-  // controlar se estamos editando ou criando um novo produtos
+  //editando ou criando um novo produtos
   const [idEmEdicao, setIdEmEdicao] = useState(null);
 
   //botão de enviar
@@ -58,7 +58,7 @@ export function Gestao() {
 
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '800px', margin: '0 auto' }}>
-      <h2>🛠️ Gestão de Estoque de Hardware</h2>
+      <h2>gestão de estoque de hardware</h2>
       
       {/*carregando*/}
       {carregando && <p style={{ color: 'blue', fontWeight: 'bold' }}>Processando...</p>}
@@ -73,11 +73,11 @@ export function Gestao() {
       {/*cadastro/edicão*/}
 
       <form onSubmit={manipularEnvio} style={{ display: 'flex', flexDirection: 'column', gap: '10px', backgroundColor: '#f3f4f6', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-        <h3>{idEmEdicao ? "✏️ Editar Componente" : "Cadastrar Novo Componente"}</h3>
+        <h3>{idEmEdicao ? "Editar Componente" : "Cadastrar Novo Componente"}</h3>
         
         <label>
           nome do item:
-          <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} style={{ width: '100%', padding: '5px', marginTop: '5px' }} placeholder="Ex: Placa de Vídeo RTX 4060" />
+          <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} style={{ width: '100%', padding: '5px', marginTop: '5px' }} placeholder="RTX 5070" />
         </label>
 
         <label>
@@ -86,8 +86,8 @@ export function Gestao() {
         </label>
 
         <label>
-          Preço Unitário (R$):
-          <input type="number" step="0.01" value={preco} onChange={(e) => setPreco(e.target.value)} style={{ width: '100%', padding: '5px', marginTop: '5px' }} placeholder="Ex: 2300.00" />
+          Valor:
+          <input type="number" step="0.01" value={preco} onChange={(e) => setPreco(e.target.value)} style={{ width: '100%', padding: '5px', marginTop: '5px' }} placeholder="Ex: 2300" />
         </label>
 
         <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
