@@ -39,6 +39,11 @@ app.post('/produtos', (req, res) => {
     return res.status(422).json({ erro: "A quantidade em estoque não pode ser negativa." });
   }
 
+  const nomeExiste = estoque.some(item => item.nome.toLowerCase() === nome.trim().toLowerCase());
+  if (nomeExiste) {
+    return res.status(409).json({ erro: "Já existe um produto cadastrado com esse nome." });
+  } // n ta funfando, desisto
+
   // Scriação dos produtos
   const novoProduto = {
     id: proximoId++,
