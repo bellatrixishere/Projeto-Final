@@ -1,30 +1,35 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import { EstoqueProvider } from './context/EstoqueProvider';
 import { Gestao } from './pages/Gestao';
 import { Dashboard } from './pages/Dashboard';
+import './App.css';
 
+/**
+ * Raiz da aplicação.
+ *
+ * - <EstoqueProvider> compartilha o estoque entre todas as páginas (1 fetch só).
+ * - <BrowserRouter> habilita as rotas /  e  /dashboard.
+ * - <NavLink> realça o link ativo automaticamente.
+ */
 function App() {
   return (
-    <BrowserRouter>
-      <nav style={{ 
-        padding: '15px', 
-        backgroundColor: '#222', 
-        display: 'flex', 
-        gap: '20px',
-        fontFamily: 'sans-serif'
-      }}>
-        <Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>
-          Ir para Gestão
-        </Link>
-        <Link to="/dashboard" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}>
-          Ir para Dashboard
-        </Link>
-      </nav>
+    <EstoqueProvider>
+      <BrowserRouter>
+        <nav className="app-nav">
+          <NavLink to="/" end className="nav-link">
+            Gestão
+          </NavLink>
+          <NavLink to="/dashboard" className="nav-link">
+            Dashboard
+          </NavLink>
+        </nav>
 
-      <Routes>
-        <Route path="/" element={<Gestao />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-    </BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Gestao />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
+      </BrowserRouter>
+    </EstoqueProvider>
   );
 }
 

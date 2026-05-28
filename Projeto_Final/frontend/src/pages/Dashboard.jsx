@@ -1,8 +1,7 @@
-import React from 'react';
-import { useEstoque } from '../hooks/useEstoque';
+import { useEstoqueContext } from '../hooks/useEstoqueContext';
 
 export function Dashboard() {
-  const { dados, carregando, erro } = useEstoque();
+  const { dados, carregando, erro } = useEstoqueContext();
 
   // contas
   const totalProdutosDistintos = dados.length;

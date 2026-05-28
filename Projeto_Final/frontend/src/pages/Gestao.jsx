@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useEstoque } from '../hooks/useEstoque';
+import { useState } from 'react';
+import { useEstoqueContext } from '../hooks/useEstoqueContext';
 
 export function Gestao() {
-  const { dados, carregando, erro, criarProduto, atualizarProduto, deletarProduto } = useEstoque();
+  const { dados, carregando, erro, criarProduto, atualizarProduto, deletarProduto } = useEstoqueContext();
 
   const [nome, setNome] = useState('');
   const [quantidade, setQuantidade] = useState('');
@@ -21,8 +21,7 @@ export function Gestao() {
       preco: preco
     };
 
-    let deuCerto = false;
-
+    let deuCerto;
     if (idEmEdicao) {
       // edicao
       deuCerto = await atualizarProduto(idEmEdicao, produtoObjeto);
@@ -56,9 +55,17 @@ export function Gestao() {
     setPreco('');
   }
 
+  // Pede confirmação antes de remover (evita clique acidental)
+  function confirmarExclusao(produto) {
+    const ok = window.confirm(`Tem certeza que deseja excluir "${produto.nome}"?`);
+    if (ok) {
+      deletarProduto(produto.id);
+    }
+  }
+
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '800px', margin: '0 auto' }}>
-      <h2>gestão de estoque de hardware</h2>
+      <h2>Gestão de Estoque de Hardware</h2>
       
       {/*carregando*/}
       {carregando && <p style={{ color: 'blue', fontWeight: 'bold' }}>Processando...</p>}
@@ -76,12 +83,12 @@ export function Gestao() {
         <h3>{idEmEdicao ? "Editar Componente" : "Cadastrar Novo Componente"}</h3>
         
         <label>
-          nome do item:
+          Nome do item:
           <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} style={{ width: '100%', padding: '5px', marginTop: '5px' }} placeholder="RTX 5070" />
         </label>
 
         <label>
-          quantidade em estoque:
+          Quantidade em estoque:
           <input type="number" value={quantidade} onChange={(e) => setQuantidade(e.target.value)} style={{ width: '100%', padding: '5px', marginTop: '5px' }} placeholder="Ex: 5" />
         </label>
 
@@ -92,19 +99,19 @@ export function Gestao() {
 
         <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
           <button type="submit" style={{ padding: '8px 15px', backgroundColor: idEmEdicao ? '#eab308' : '#22c55e', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-            {idEmEdicao ? "Salvar Alterações" : "cdastrar hardware"}
+            {idEmEdicao ? "Salvar Alterações" : "Cadastrar Hardware"}
           </button>
           
           {idEmEdicao && (
             <button type="button" onClick={cancelarEdicao} style={{ padding: '8px 15px', backgroundColor: '#6b7280', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-              cancelar
+              Cancelar
             </button>
           )}
         </div>
       </form>
 
           {/* listar produtos */}
-      <h3>itens dadastrados no depósito</h3> 
+      <h3>Itens cadastrados no depósito</h3>
       
       {dados.length === 0 ? (
         <p>Nenhum produto no estoque atualmente.</p>
@@ -130,7 +137,7 @@ export function Gestao() {
                   <button onClick={() => iniciarEdicao(produto)} style={{ padding: '4px 8px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>
                     Editar
                   </button>
-                  <button onClick={() => deletarProduto(produto.id)} style={{ padding: '4px 8px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>
+                  <button onClick={() => confirmarExclusao(produto)} style={{ padding: '4px 8px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>
                     Excluir
                   </button>
                 </td>
