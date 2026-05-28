@@ -1,16 +1,57 @@
-# React + Vite
+# Frontend — Gestão de Estoque (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação React que consome a API REST do backend para gerenciar o estoque.
 
-Currently, two official plugins are available:
+> Para o passo-a-passo de execução completo, veja o
+> [README da raiz do projeto](../../README.md).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Scripts disponíveis
 
-## React Compiler
+```bash
+npm run dev       # inicia o servidor de desenvolvimento (Vite)
+npm run build     # gera build de produção em /dist
+npm run preview   # serve o build local para verificação
+npm run lint      # roda o ESLint
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Organização das pastas
 
-## Expanding the ESLint configuration
+```
+src/
+├── App.jsx                       roteamento + EstoqueProvider
+├── App.css                       estilos da navegação
+├── main.jsx                      bootstrap (createRoot)
+├── index.css                     estilos globais
+│
+├── pages/
+│   ├── Gestao.jsx                CRUD: formulário + tabela
+│   └── Dashboard.jsx             métricas do estoque
+│
+├── hooks/
+│   └── useEstoque.js             custom hook com chamadas HTTP
+│
+├── context/
+│   └── EstoqueContext.jsx        compartilha o estoque entre páginas
+│
+└── services/
+    └── api.js                    URL e endpoints do backend
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Por que Context API?
+
+Sem o Context, **cada página** chamaria `useEstoque()` por conta própria,
+disparando **dois `GET /produtos` simultâneos** e mantendo estados separados
+que podiam ficar dessincronizados.
+
+Com o `EstoqueProvider` no topo da árvore, ambas as páginas leem o **mesmo estado**:
+
+```
+<EstoqueProvider>            ← faz 1 fetch ao montar
+  <BrowserRouter>
+    <Routes>
+      <Gestao />              ← lê via useEstoqueContext()
+      <Dashboard />           ← lê via useEstoqueContext()
+    </Routes>
+  </BrowserRouter>
+</EstoqueProvider>
+```
