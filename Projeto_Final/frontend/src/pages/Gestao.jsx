@@ -7,6 +7,7 @@ export function Gestao() {
   const [nome, setNome] = useState('');
   const [quantidade, setQuantidade] = useState('');
   const [preco, setPreco] = useState('');
+  const [termoBusca, setTermoBusca] = useState('');
 
   //editando ou criando um novo produtos
   const [idEmEdicao, setIdEmEdicao] = useState(null);
@@ -63,6 +64,23 @@ export function Gestao() {
     }
   }
 
+  const termoBuscaNormalizado = termoBusca.trim().toLowerCase();
+  const dadosFiltrados = dados.filter((produto) =>
+    produto.nome.toLowerCase().includes(termoBuscaNormalizado)
+  );
+
+  function obterStatusEstoque(quantidade) {
+    if (Number(quantidade) < 3) {
+      return { texto: 'Baixo', fundo: '#fee2e2', cor: '#991b1b' };
+    }
+
+    if (Number(quantidade) <= 5) {
+      return { texto: 'Atenção', fundo: '#fef3c7', cor: '#92400e' };
+    }
+
+    return { texto: 'Ok', fundo: '#dcfce7', cor: '#166534' };
+  }
+
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '800px', margin: '0 auto' }}>
       <h2>Gestão de Estoque de Hardware</h2>
@@ -112,39 +130,70 @@ export function Gestao() {
 
           {/* listar produtos */}
       <h3>Itens cadastrados no depósito</h3>
+
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'end', justifyContent: 'space-between', flexWrap: 'wrap', marginBottom: '10px' }}>
+        <label style={{ flex: '1', minWidth: '220px', fontWeight: 'bold' }}>
+          Buscar item:
+          <input
+            type="search"
+            value={termoBusca}
+            onChange={(e) => setTermoBusca(e.target.value)}
+            style={{ width: '100%', padding: '8px', marginTop: '5px', border: '1px solid #d1d5db', borderRadius: '4px' }}
+            placeholder="Digite o nome do componente"
+          />
+        </label>
+
+        <span style={{ color: '#475569', fontSize: '14px', paddingBottom: '8px' }}>
+          {dadosFiltrados.length} de {dados.length} itens exibidos
+        </span>
+      </div>
       
       {dados.length === 0 ? (
         <p>Nenhum produto no estoque atualmente.</p>
+      ) : dadosFiltrados.length === 0 ? (
+        <p>Nenhum item encontrado para "{termoBusca}".</p>
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '10px' }}>
-          <thead>
-            <tr style={{ backgroundColor: '#e5e7eb', textAlign: 'left' }}>
-              <th style={{ padding: '10px', border: '1px solid #d1d5db' }}>ID</th>
-              <th style={{ padding: '10px', border: '1px solid #d1d5db' }}>Nome</th>
-              <th style={{ padding: '10px', border: '1px solid #d1d5db' }}>Qtd.</th>
-              <th style={{ padding: '10px', border: '1px solid #d1d5db' }}>Preço</th>
-              <th style={{ padding: '10px', border: '1px solid #d1d5db' }}>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dados.map((produto) => (
-              <tr key={produto.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
-                <td style={{ padding: '10px', border: '1px solid #d1d5db' }}>{produto.id}</td>
-                <td style={{ padding: '10px', border: '1px solid #d1d5db' }}>{produto.nome}</td>
-                <td style={{ padding: '10px', border: '1px solid #d1d5db' }}>{produto.quantidade}</td>
-                <td style={{ padding: '10px', border: '1px solid #d1d5db' }}>R$ {produto.preco.toFixed(2)}</td>
-                <td style={{ padding: '10px', border: '1px solid #d1d5db', display: 'flex', gap: '5px' }}>
-                  <button onClick={() => iniciarEdicao(produto)} style={{ padding: '4px 8px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>
-                    Editar
-                  </button>
-                  <button onClick={() => confirmarExclusao(produto)} style={{ padding: '4px 8px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>
-                    Excluir
-                  </button>
-                </td>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', minWidth: '720px', borderCollapse: 'collapse', marginTop: '10px' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#e5e7eb', textAlign: 'left' }}>
+                <th style={{ padding: '10px', border: '1px solid #d1d5db' }}>ID</th>
+                <th style={{ padding: '10px', border: '1px solid #d1d5db' }}>Nome</th>
+                <th style={{ padding: '10px', border: '1px solid #d1d5db' }}>Qtd.</th>
+                <th style={{ padding: '10px', border: '1px solid #d1d5db' }}>Status</th>
+                <th style={{ padding: '10px', border: '1px solid #d1d5db' }}>Preço</th>
+                <th style={{ padding: '10px', border: '1px solid #d1d5db' }}>Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {dadosFiltrados.map((produto) => {
+                const statusEstoque = obterStatusEstoque(produto.quantidade);
+
+                return (
+                  <tr key={produto.id} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <td style={{ padding: '10px', border: '1px solid #d1d5db' }}>{produto.id}</td>
+                    <td style={{ padding: '10px', border: '1px solid #d1d5db' }}>{produto.nome}</td>
+                    <td style={{ padding: '10px', border: '1px solid #d1d5db' }}>{produto.quantidade}</td>
+                    <td style={{ padding: '10px', border: '1px solid #d1d5db' }}>
+                      <span style={{ display: 'inline-block', padding: '3px 8px', borderRadius: '999px', backgroundColor: statusEstoque.fundo, color: statusEstoque.cor, fontWeight: 'bold', fontSize: '12px' }}>
+                        {statusEstoque.texto}
+                      </span>
+                    </td>
+                    <td style={{ padding: '10px', border: '1px solid #d1d5db' }}>R$ {produto.preco.toFixed(2)}</td>
+                    <td style={{ padding: '10px', border: '1px solid #d1d5db', display: 'flex', gap: '5px' }}>
+                      <button onClick={() => iniciarEdicao(produto)} style={{ padding: '4px 8px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>
+                        Editar
+                      </button>
+                      <button onClick={() => confirmarExclusao(produto)} style={{ padding: '4px 8px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}>
+                        Excluir
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

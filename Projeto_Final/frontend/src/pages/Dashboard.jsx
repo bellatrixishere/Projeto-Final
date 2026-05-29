@@ -5,6 +5,9 @@ export function Dashboard() {
 
   // contas
   const totalProdutosDistintos = dados.length;
+  const totalUnidades = dados.reduce((soma, produto) => {
+    return soma + Number(produto.quantidade);
+  }, 0);
 
   // soma todos os preço x quantidade
   const valorTotalEstoque = dados.reduce((soma, produto) => {
@@ -12,7 +15,16 @@ export function Dashboard() {
   }, 0);
 
   //produtos estão com menos de 3 unidades
-  const produtosCriticos = dados.filter(produto => produto.quantidade < 3).length;
+  const produtosComBaixoEstoque = dados.filter(produto => produto.quantidade < 3);
+  const produtosCriticos = produtosComBaixoEstoque.length;
+
+  const produtoMaisCaro = dados.reduce((maisCaro, produto) => {
+    if (!maisCaro || produto.preco > maisCaro.preco) {
+      return produto;
+    }
+
+    return maisCaro;
+  }, null);
 
   //último produto que foi cadastrado (o último item do array)
   const ultimoCadastrado = dados.length > 0 ? dados[dados.length - 1] : null;
@@ -51,6 +63,15 @@ export function Dashboard() {
           <span style={{ fontSize: '12px', color: '#4ade80' }}>Produtos cadastrados</span>
         </div>
 
+        {/* Quantidade total */}
+        <div style={{ flex: '1', minWidth: '200px', backgroundColor: '#fff7ed', border: '1px solid #fed7aa', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+          <h4 style={{ margin: '0 0 10px 0', color: '#9a3412' }}>peças disponíveis</h4>
+          <p style={{ margin: '0', fontSize: '24px', fontWeight: 'bold', color: '#7c2d12' }}>
+            {totalUnidades} unidades
+          </p>
+          <span style={{ fontSize: '12px', color: '#fb923c' }}>Soma de todas as quantidades</span>
+        </div>
+
         {/* POucos itens*/}
         <div style={{ 
           flex: '1', 
@@ -68,6 +89,30 @@ export function Dashboard() {
           <span style={{ fontSize: '12px', color: produtosCriticos > 0 ? '#f87171' : '#94a3b8' }}>Com menos de 3 unidades</span>
         </div>
 
+      </div>
+
+      {produtosComBaixoEstoque.length > 0 && (
+        <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#fff7ed', borderRadius: '8px', border: '1px solid #fed7aa' }}>
+          <h3 style={{ margin: '0 0 12px 0', color: '#9a3412' }}>Itens para reposição</h3>
+          <ul style={{ margin: '0', paddingLeft: '20px', color: '#7c2d12' }}>
+            {produtosComBaixoEstoque.map((produto) => (
+              <li key={produto.id}>
+                <strong>{produto.nome}</strong> tem {produto.quantidade} {produto.quantidade === 1 ? 'unidade' : 'unidades'} em estoque.
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+        <h3 style={{ margin: '0 0 10px 0', color: '#334155' }}>Componente de maior valor</h3>
+        {produtoMaisCaro ? (
+          <p style={{ margin: '0', color: '#475569' }}>
+            <strong>{produtoMaisCaro.nome}</strong> custa <strong>R$ {produtoMaisCaro.preco.toFixed(2)}</strong> por unidade.
+          </p>
+        ) : (
+          <p style={{ margin: '0', color: '#94a3b8' }}>Nenhum componente cadastrado para comparação.</p>
+        )}
       </div>
 
       {/* Ultimo registro */}
